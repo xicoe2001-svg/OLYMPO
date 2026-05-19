@@ -174,7 +174,7 @@ header .subtitle{
   margin:auto;
 }
 .panel-hero{
-  position:relative;height:220px;overflow:hidden;
+  position:relative;height:300px;overflow:hidden;
   background:var(--navy);
 }
 .panel-hero .hero-bg{
@@ -182,12 +182,13 @@ header .subtitle{
 }
 .panel-hero .hero-img{
   position:absolute;inset:0;width:100%;height:100%;
-  object-fit:cover;opacity:.45;filter:sepia(.12) contrast(1.1);
+  object-fit:cover;object-position:center 20%;
+  opacity:.5;filter:sepia(.1) contrast(1.05);
   z-index:1;
 }
 .panel-hero .gradient{
   position:absolute;inset:0;z-index:2;
-  background:linear-gradient(180deg,transparent 0%,rgba(26,39,68,.5) 50%,var(--navy) 100%);
+  background:linear-gradient(180deg,transparent 0%,rgba(26,39,68,.35) 40%,var(--navy) 100%);
 }
 .panel-hero-text{
   position:absolute;bottom:0;left:0;right:0;padding:20px 28px;z-index:3;
@@ -789,7 +790,7 @@ function buildCards(){
 }
 
 // ── DETAIL PANEL ──
-// ── HERO IMAGES (raw URLs — no thumb, tested working) ──
+// ── HERO IMAGES (raw Wikimedia URLs — tested working from GitHub Pages) ──
 const IMG={
   caos:'https://upload.wikimedia.org/wikipedia/commons/a/a5/Chaos_Monster_and_Sun_God.png',
   gea:'https://upload.wikimedia.org/wikipedia/commons/5/53/Anselm_Feuerbach_-_Gaea_%281875%29.jpg',
@@ -807,9 +808,9 @@ const IMG={
   febe:'https://upload.wikimedia.org/wikipedia/commons/3/3d/SeleneandEndymion.jpg',
   prometeo:'https://upload.wikimedia.org/wikipedia/commons/2/26/Peter_Paul_Rubens_-_Prometheus_Bound_-_Google_Art_Project.jpg',
   atlas:'https://upload.wikimedia.org/wikipedia/commons/8/8c/MAN_Atlante_fronte_1040572.JPG',
-  zeus:'https://upload.wikimedia.org/wikipedia/commons/c/c8/Jupiter_Smyrna_Louvre_Ma13.jpg',
-  hera:'https://upload.wikimedia.org/wikipedia/commons/7/74/Hera_Campana_Louvre_Ma2283.jpg',
-  poseidon:'https://upload.wikimedia.org/wikipedia/commons/6/68/Poseidon_sculpture_Copenhagen_2005.jpg',
+  zeus:'https://upload.wikimedia.org/wikipedia/commons/b/b7/Jean_Auguste_Dominique_Ingres_-_Jupiter_and_Thetis_-_Google_Art_Project.jpg',
+  hera:'https://upload.wikimedia.org/wikipedia/commons/b/bb/Andrea_Appiani_-_Juno.jpg',
+  poseidon:'https://upload.wikimedia.org/wikipedia/commons/3/35/Ivan_Aivazovsky_-_Poseidon%27s_travel_over_the_sea.jpg',
   hades:'https://upload.wikimedia.org/wikipedia/commons/4/48/Hades-et-Cerberus-III.jpg',
   demeter:'https://upload.wikimedia.org/wikipedia/commons/3/3b/Demeter_Altemps_Inv8596.jpg',
   hestia:'https://upload.wikimedia.org/wikipedia/commons/1/1b/Hestia_Giustiniani.jpg',
@@ -817,25 +818,72 @@ const IMG={
   apolo:'https://upload.wikimedia.org/wikipedia/commons/f/f5/Apollo_of_the_Belvedere.jpg',
   artemisa:'https://upload.wikimedia.org/wikipedia/commons/0/0a/Diana_of_Versailles.jpg',
   ares:'https://upload.wikimedia.org/wikipedia/commons/1/1e/Ares_Ludovisi_Altemps_Inv8602_n2.jpg',
-  afrodita:'https://upload.wikimedia.org/wikipedia/commons/5/56/Venus_de_Milo_Louvre_Ma399_n4.jpg',
-  hefesto:'https://upload.wikimedia.org/wikipedia/commons/d/d1/Vulcan_Coustou_Louvre_MR1814.jpg',
+  afrodita:'https://upload.wikimedia.org/wikipedia/commons/e/ea/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg',
+  hefesto:'https://upload.wikimedia.org/wikipedia/commons/7/7e/Velazquez-The_Forge_of_Vulcan.jpg',
   hermes:'https://upload.wikimedia.org/wikipedia/commons/e/e1/Hermes_Ingenui_Pio-Clementino_Inv544.jpg',
-  dioniso:'https://upload.wikimedia.org/wikipedia/commons/2/2a/Dionysos_Louvre_Ma87_n2.jpg',
+  dioniso:'https://upload.wikimedia.org/wikipedia/commons/9/9a/Caravaggio_-_Bacco_adolescente_-_Google_Art_Project.jpg',
   persefone:'https://upload.wikimedia.org/wikipedia/commons/2/20/Frederic_Lord_Leighton_-_The_Return_of_Persephone_%281891%29.jpg',
   heracles:'https://upload.wikimedia.org/wikipedia/commons/e/e4/Herakles_Farnese_MAN_Napoli_Inv6001_n01.jpg',
-  perseo:'https://upload.wikimedia.org/wikipedia/commons/c/c4/Cellini_-_Perseo_-_Loggia_dei_Lanzi_2.jpg',
-  aquiles:'https://upload.wikimedia.org/wikipedia/commons/2/29/Achilles_and_Patroclus_%28Sosias_Painter%29.jpg',
+  perseo:'https://upload.wikimedia.org/wikipedia/commons/2/2c/Laurent-Honor%C3%A9_Marqueste_-_Perseus_and_the_Gorgon_%281890%29.jpg',
+  aquiles:'https://upload.wikimedia.org/wikipedia/commons/6/6f/Peter_Paul_Rubens_-_Achilles_slays_Hector.jpg',
   teseo:'https://upload.wikimedia.org/wikipedia/commons/5/5d/Theseus_Minotaur_Ramey_Tuileries.jpg',
   orfeo:'https://upload.wikimedia.org/wikipedia/commons/5/55/Edward_Poynter_-_Orpheus_and_Eurydice.jpg',
   eneas:'https://upload.wikimedia.org/wikipedia/commons/3/3e/Aeneas%27_Flight_from_Troy_by_Federico_Barocci.jpg',
   helena:'https://upload.wikimedia.org/wikipedia/commons/0/0a/Evelyn_De_Morgan_-_Helen_of_Troy%2C_1898.jpg',
 };
+// Per-image positioning to show faces/key parts
+const IMG_POS={
+  caos:'center center',
+  gea:'center 30%',
+  urano:'center 25%',
+  nyx:'center 15%',
+  erebo:'center 30%',
+  tartaro:'center 30%',
+  eros_p:'center 20%',
+  cronos:'center 15%',
+  rea:'center 30%',
+  oceano:'center 25%',
+  hyperion:'center 20%',
+  mnemosine:'center 15%',
+  temis:'center 25%',
+  febe:'center 30%',
+  prometeo:'center 25%',
+  atlas:'center 15%',
+  zeus:'center 15%',
+  hera:'center 20%',
+  poseidon:'center 40%',
+  hades:'center 20%',
+  demeter:'center 10%',
+  hestia:'center 10%',
+  atenea:'center 10%',
+  apolo:'center 8%',
+  artemisa:'center 10%',
+  ares:'center 20%',
+  afrodita:'center 30%',
+  hefesto:'center 25%',
+  hermes:'center 10%',
+  dioniso:'center 15%',
+  persefone:'center 20%',
+  heracles:'center 15%',
+  perseo:'center 20%',
+  aquiles:'center 25%',
+  teseo:'center 15%',
+  orfeo:'center 25%',
+  eneas:'center 20%',
+  helena:'center 15%',
+};
 function showDetail(id){
   const g = D[id]; if(!g) return;
   document.getElementById('p-bg').innerHTML = BG[id]||'';
   const img = document.getElementById('p-img');
-  if(IMG[id]){img.style.display='';img.src=IMG[id];img.alt=g.name;}
-  else{img.style.display='none';img.src='';}
+  if(IMG[id]){
+    img.style.display='';
+    img.src=IMG[id];
+    img.alt=g.name;
+    img.style.objectPosition=IMG_POS[id]||'center 20%';
+  } else {
+    img.style.display='none';img.src='';
+  }
   document.getElementById('p-icon').innerHTML = g.icon;
   document.getElementById('p-name').textContent = g.name;
   document.getElementById('p-sub').textContent = g.sub;
