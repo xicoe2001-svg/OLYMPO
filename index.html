@@ -180,6 +180,11 @@ header .subtitle{
 .panel-hero .hero-bg{
   position:absolute;inset:0;width:100%;height:100%;
 }
+.panel-hero .hero-img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;opacity:.45;filter:sepia(.12) contrast(1.1);
+  z-index:1;
+}
 .panel-hero .gradient{
   position:absolute;inset:0;z-index:2;
   background:linear-gradient(180deg,transparent 0%,rgba(26,39,68,.5) 50%,var(--navy) 100%);
@@ -364,6 +369,7 @@ footer p{font-size:.8rem;color:var(--text-light);font-style:italic}
   <div class="panel" id="panel" onclick="event.stopPropagation()">
     <div class="panel-hero" id="p-hero">
       <div class="hero-bg" id="p-bg"></div>
+      <img class="hero-img" id="p-img" src="" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.display='none'">
       <div class="gradient"></div>
       <button class="close-btn" onclick="closePanel()" aria-label="Cerrar">✕</button>
       <div class="panel-hero-text">
@@ -783,9 +789,53 @@ function buildCards(){
 }
 
 // ── DETAIL PANEL ──
+// ── HERO IMAGES (raw URLs — no thumb, tested working) ──
+const IMG={
+  caos:'https://upload.wikimedia.org/wikipedia/commons/a/a5/Chaos_Monster_and_Sun_God.png',
+  gea:'https://upload.wikimedia.org/wikipedia/commons/5/53/Anselm_Feuerbach_-_Gaea_%281875%29.jpg',
+  urano:'https://upload.wikimedia.org/wikipedia/commons/4/42/Giorgio_Vasari_-_Mutilation_of_Uranus_by_Saturn_-_WGA24282.jpg',
+  nyx:'https://upload.wikimedia.org/wikipedia/commons/7/7c/William-Adolphe_Bouguereau_%281825-1905%29_-_La_Nuit_%281883%29.jpg',
+  erebo:'https://upload.wikimedia.org/wikipedia/commons/4/4b/Gustave_Dor%C3%A9_-_Dante_Alighieri_-_Inferno_-_Plate_8_%28Canto_III_-_Charon%29.jpg',
+  tartaro:'https://upload.wikimedia.org/wikipedia/commons/a/a2/Cornelis_van_Haarlem_-_The_Fall_of_the_Titans_-_Google_Art_Project.jpg',
+  eros_p:'https://upload.wikimedia.org/wikipedia/commons/6/6a/William-Adolphe_Bouguereau_%281825-1905%29_-_A_Young_Girl_Defending_Herself_Against_Eros_%281880%29.jpg',
+  cronos:'https://upload.wikimedia.org/wikipedia/commons/8/82/Francisco_de_Goya%2C_Saturno_devorando_a_su_hijo_%281819-1823%29.jpg',
+  rea:'https://upload.wikimedia.org/wikipedia/commons/4/4f/Karl_Friedrich_Schinkel_-_Rhea_%C3%BCbergibt_Kronos_den_in_Windeln_gewickelten_Stein.jpg',
+  oceano:'https://upload.wikimedia.org/wikipedia/commons/3/3c/Jacob_de_Gheyn_II_-_Neptune_and_Amphitrite.jpg',
+  hyperion:'https://upload.wikimedia.org/wikipedia/commons/1/17/Helios_as_Personification_of_Midday.jpg',
+  mnemosine:'https://upload.wikimedia.org/wikipedia/commons/2/2c/Dante_Gabriel_Rossetti_-_Mnemosyne_%28lamp_of_memory%29_-_1875-1881.jpg',
+  temis:'https://upload.wikimedia.org/wikipedia/commons/e/e0/Iustitia_by_Maarten_van_Heemskerck%2C_1556.jpg',
+  febe:'https://upload.wikimedia.org/wikipedia/commons/3/3d/SeleneandEndymion.jpg',
+  prometeo:'https://upload.wikimedia.org/wikipedia/commons/2/26/Peter_Paul_Rubens_-_Prometheus_Bound_-_Google_Art_Project.jpg',
+  atlas:'https://upload.wikimedia.org/wikipedia/commons/8/8c/MAN_Atlante_fronte_1040572.JPG',
+  zeus:'https://upload.wikimedia.org/wikipedia/commons/c/c8/Jupiter_Smyrna_Louvre_Ma13.jpg',
+  hera:'https://upload.wikimedia.org/wikipedia/commons/7/74/Hera_Campana_Louvre_Ma2283.jpg',
+  poseidon:'https://upload.wikimedia.org/wikipedia/commons/6/68/Poseidon_sculpture_Copenhagen_2005.jpg',
+  hades:'https://upload.wikimedia.org/wikipedia/commons/4/48/Hades-et-Cerberus-III.jpg',
+  demeter:'https://upload.wikimedia.org/wikipedia/commons/3/3b/Demeter_Altemps_Inv8596.jpg',
+  hestia:'https://upload.wikimedia.org/wikipedia/commons/1/1b/Hestia_Giustiniani.jpg',
+  atenea:'https://upload.wikimedia.org/wikipedia/commons/c/c7/Mattei_Athena_Louvre_Ma530_n2.jpg',
+  apolo:'https://upload.wikimedia.org/wikipedia/commons/f/f5/Apollo_of_the_Belvedere.jpg',
+  artemisa:'https://upload.wikimedia.org/wikipedia/commons/0/0a/Diana_of_Versailles.jpg',
+  ares:'https://upload.wikimedia.org/wikipedia/commons/1/1e/Ares_Ludovisi_Altemps_Inv8602_n2.jpg',
+  afrodita:'https://upload.wikimedia.org/wikipedia/commons/5/56/Venus_de_Milo_Louvre_Ma399_n4.jpg',
+  hefesto:'https://upload.wikimedia.org/wikipedia/commons/d/d1/Vulcan_Coustou_Louvre_MR1814.jpg',
+  hermes:'https://upload.wikimedia.org/wikipedia/commons/e/e1/Hermes_Ingenui_Pio-Clementino_Inv544.jpg',
+  dioniso:'https://upload.wikimedia.org/wikipedia/commons/2/2a/Dionysos_Louvre_Ma87_n2.jpg',
+  persefone:'https://upload.wikimedia.org/wikipedia/commons/2/20/Frederic_Lord_Leighton_-_The_Return_of_Persephone_%281891%29.jpg',
+  heracles:'https://upload.wikimedia.org/wikipedia/commons/e/e4/Herakles_Farnese_MAN_Napoli_Inv6001_n01.jpg',
+  perseo:'https://upload.wikimedia.org/wikipedia/commons/c/c4/Cellini_-_Perseo_-_Loggia_dei_Lanzi_2.jpg',
+  aquiles:'https://upload.wikimedia.org/wikipedia/commons/2/29/Achilles_and_Patroclus_%28Sosias_Painter%29.jpg',
+  teseo:'https://upload.wikimedia.org/wikipedia/commons/5/5d/Theseus_Minotaur_Ramey_Tuileries.jpg',
+  orfeo:'https://upload.wikimedia.org/wikipedia/commons/5/55/Edward_Poynter_-_Orpheus_and_Eurydice.jpg',
+  eneas:'https://upload.wikimedia.org/wikipedia/commons/3/3e/Aeneas%27_Flight_from_Troy_by_Federico_Barocci.jpg',
+  helena:'https://upload.wikimedia.org/wikipedia/commons/0/0a/Evelyn_De_Morgan_-_Helen_of_Troy%2C_1898.jpg',
+};
 function showDetail(id){
   const g = D[id]; if(!g) return;
   document.getElementById('p-bg').innerHTML = BG[id]||'';
+  const img = document.getElementById('p-img');
+  if(IMG[id]){img.style.display='';img.src=IMG[id];img.alt=g.name;}
+  else{img.style.display='none';img.src='';}
   document.getElementById('p-icon').innerHTML = g.icon;
   document.getElementById('p-name').textContent = g.name;
   document.getElementById('p-sub').textContent = g.sub;
